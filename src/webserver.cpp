@@ -1,4 +1,5 @@
 
+#include "functions.h"
 #include "webserver.h"
 
 ESP8266WebServer webserver = ESP8266WebServer(80);
@@ -23,7 +24,7 @@ void webserverIndex() {
         "</div>"
       "</body>"
     "</html>"
-  , analogRead(PIN_SENSOR), hlevel, ptime);
+  , poweredAnalogRead(PIN_SENSOR_POWER, PIN_SENSOR), hlevel, ptime);
   webserver.send(200, "text/html", buffer);
 }
 
