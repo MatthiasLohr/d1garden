@@ -4,7 +4,8 @@
 ESP8266WebServer webserver = ESP8266WebServer(80);
 
 void webserverIndex() {
-  webserver.send(200, "text/html",
+  char buffer[8096];
+  sprintf(buffer,
     "<html>"
       "<head>"
         "<title>Garden D1 Control Center</title>"
@@ -14,14 +15,15 @@ void webserverIndex() {
         "<div class=\"container\">"
           "<h1>Garden D1 Control Center</h1>"
           "<form method=\"POST\" action=\"/update\">"
-            "<input type=\"number\" name=\"hlevel\" id=\"hlevel\">"
-            "<input type=\"number\" name=\"ptime\" id=\"ptime\">"
+            "<input type=\"number\" name=\"hlevel\" id=\"hlevel\" value=\"%i\" min=\"0\" max=\"1023\">"
+            "<input type=\"number\" name=\"ptime\" id=\"ptime\" value=\"%i\" min=\"100\" max=\"15000\">"
             "<input class=\"button-primary\" type=\"submit\" value=\"Update\">"
           "</form>"
         "</div>"
       "</body>"
     "</html>"
-  );
+  , hlevel, ptime);
+  webserver.send(200, "text/html", buffer);
 }
 
 void webserverUpdate() {
@@ -29,6 +31,9 @@ void webserverUpdate() {
   hlevel = atoi(hlevel_s.c_str());
   String ptime_s = webserver.arg("ptime");
   ptime = atoi(ptime_s.c_str());
+  EEPROM.put(0, hlevel);
+  EEPROM.put(4, ptime);
+  EEPROM.commit();
   webserver.sendHeader("Location", String("/"), true);
   webserver.send(302, "text/plain", "");
 }

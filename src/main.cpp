@@ -20,6 +20,9 @@ void setup() {
   webserver.on("/style.css", webserverStyle);
   webserver.on("/update", webserverUpdate);
   webserver.begin();
+  EEPROM.begin(512);
+  EEPROM.get(0, hlevel);
+  EEPROM.get(4, ptime);
 }
 
 void loop() {
